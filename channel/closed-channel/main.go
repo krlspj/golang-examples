@@ -47,7 +47,7 @@ func main() {
 		}
 	}()
 
-	go aType.prepareChan()
+	aType.prepareChan()
 
 	//	fmt.Println("waiting for 10 seconds")
 	//	time.Sleep(10 * time.Second)
