@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,12 +47,12 @@ type Status struct {
 }
 
 type Child struct {
-	Name NullString `json:"name"`
+	Name NullString `json:"name,omitempty"`
 	Age  NullInt    `json:"age"`
 }
 
 type Person struct {
-	Name     NullString `json:"name"`
+	Name     NullString `json:"name,omitempty"`
 	Age      NullInt    `json:"age"`
 	Height   NullInt    `json:"height"`
 	Married  NullBool   `json:"married"`
@@ -93,6 +94,48 @@ func NewPerson() Person {
 	}
 }
 
+func (ns *NullString) MarshalJSON() ([]byte, error) {
+	if ns.IsNull {
+		fmt.Println("ns", ns.Value)
+		return []byte("null"), nil
+	}
+	if ns.IsEmpty {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(ns.Value)
+}
+
+//func (ns *NullString) MarshalJSON() ([]byte, error) {
+//	if ns.IsNull {
+//		return []byte("null"), nil
+//	}
+//	if ns.IsEmpty {
+//		return nil, nil
+//		//return []byte("undefined"), nil
+//	}
+//	return json.Marshal(ns.Value)
+//}
+
+//func (nb *NullBool) MarshalJSON() ([]byte, error) {
+//	if nb.IsNull {
+//		return []byte("null"), nil
+//	}
+//	if nb.IsEmpty {
+//		return []byte{}, nil
+//	}
+//	return json.Marshal(nb.Value)
+//}
+//
+//func (ni *NullInt) MarshalJSON() ([]byte, error) {
+//	if ni.IsNull {
+//		return []byte("null"), nil
+//	}
+//	if ni.IsEmpty {
+//		return []byte{}, nil
+//	}
+//	return json.Marshal(ni.Value)
+//}
+
 func (ni *NullInt) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		ni.IsNull = true
@@ -127,7 +170,6 @@ func (nb *NullBool) UnmarshalJSON(data []byte) error {
 }
 
 func (c *Child) UnmarshalJSON(data []byte) error {
-	// Define a temporary struct to hold the JSON data
 	var temp struct {
 		Name NullString `json:"name"`
 		Age  NullInt    `json:"age"`
@@ -193,7 +235,17 @@ func main() {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
+
+		//mperson, err := json.Marshal(&person)
+		//_ = err
+		//if err != nil {
+		//	fmt.Println("error marshalling", err.Error())
+		//	return
+		//}
+		//c.JSON(200, gin.H{"marshalledPerson": string(mperson)})
+		//c.JSON(200, gin.H{"person": person, "marshalledPerson": mperson})
 		c.JSON(200, gin.H{"person": person})
+		//fmt.Println("string mperson", mperson)
 	})
 
 	r.Run(":8080")
