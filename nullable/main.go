@@ -20,7 +20,7 @@ type NullInt struct {
 }
 
 type NullString struct {
-	Value   string
+	Value   string `json:",omitempty"`
 	IsNull  bool
 	IsEmpty bool
 }
@@ -44,12 +44,12 @@ func NewEmptyNullBool() NullBool {
 }
 
 type Person struct {
-	Name    NullString `json:"name"`
-	Age     NullInt    `json:"age"`
-	Height  NullInt    `json:"height"`
-	Married NullBool   `json:"married"`
-	Pet     NullString `json:"pet"`
-	Job     NullString `json:"job"`
+	Name    NullString `json:"name,omitempty"`
+	Age     NullInt    `json:"age,omitempty"`
+	Height  NullInt    `json:"height,omitempty"`
+	Married NullBool   `json:"married,omitempty"`
+	Pet     NullString `json:"pet,omitempty"`
+	Job     NullString `json:"job,omitempty"`
 }
 
 func NewPerson() Person {
@@ -96,6 +96,53 @@ func (nb *NullBool) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &nb.Value)
 }
 
+func (ns NullString) MarshalJSON() ([]byte, error) {
+	if ns.IsNull {
+		return []byte("null"), nil
+	}
+	if ns.IsEmpty {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(ns.Value)
+}
+
+func (ns NullBool) MarshalJSON() ([]byte, error) {
+	if ns.IsNull {
+		return []byte("null"), nil
+	}
+	if ns.IsEmpty {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(ns.Value)
+}
+
+func (ns NullInt) MarshalJSON() ([]byte, error) {
+	if ns.IsNull {
+		return []byte("null"), nil
+	}
+	if ns.IsEmpty {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(ns.Value)
+}
+
+func (p Person) MarshalJSON() ([]byte, error) {
+	var name []byte
+	if p.Name.IsEmpty {
+		//passs
+	} else if p.Name.IsNull {
+		name = []byte("null")
+	} else {
+		name = []byte(p.Name.Value)
+	}
+	return json.Marshal(struct {
+		Name string `json:"name,omitempty"`
+	}{
+		Name: string(name),
+	})
+
+}
+
 func main() {
 	person := NewPerson()
 	err := json.Unmarshal([]byte(simpleJsonData), &person)
@@ -104,4 +151,17 @@ func main() {
 		return
 	}
 	fmt.Printf("Person: %+v\n", person)
+
+	fmt.Println("----- unmarshalled-----")
+
+	person1 := Person{Name: NullString{Value: "John Doe", IsNull: false, IsEmpty: false}, Age: NullInt{Value: 0, IsNull: false, IsEmpty: false}, Height: NullInt{Value: 0, IsNull: true, IsEmpty: false}, Married: NullBool{Value: false, IsNull: false, IsEmpty: false}, Pet: NullString{Value: "missing", IsNull: false, IsEmpty: false}, Job: NullString{Value: "", IsNull: false, IsEmpty: true}}
+
+	fmt.Println("------ marshalling ------")
+	data, err := json.Marshal(person1)
+	if err != nil {
+		fmt.Println("err", err.Error())
+		return
+	}
+	fmt.Println("data ->", string(data))
+
 }

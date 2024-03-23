@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,13 +93,12 @@ func NewPerson() Person {
 	}
 }
 
-func (ns *NullString) MarshalJSON() ([]byte, error) {
+func (ns NullString) MarshalJSON() ([]byte, error) {
 	if ns.IsNull {
-		fmt.Println("ns", ns.Value)
 		return []byte("null"), nil
 	}
 	if ns.IsEmpty {
-		return []byte("{}"), nil
+		return []byte(`"{}"`), nil
 	}
 	return json.Marshal(ns.Value)
 }
