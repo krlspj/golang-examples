@@ -98,41 +98,30 @@ func (ns NullString) MarshalJSON() ([]byte, error) {
 		return []byte("null"), nil
 	}
 	if ns.IsEmpty {
-		return []byte(`"{}"`), nil
+		return []byte("{}"), nil
 	}
 	return json.Marshal(ns.Value)
 }
 
-//func (ns *NullString) MarshalJSON() ([]byte, error) {
-//	if ns.IsNull {
-//		return []byte("null"), nil
-//	}
-//	if ns.IsEmpty {
-//		return nil, nil
-//		//return []byte("undefined"), nil
-//	}
-//	return json.Marshal(ns.Value)
-//}
+func (nb NullBool) MarshalJSON() ([]byte, error) {
+	if nb.IsNull {
+		return []byte("null"), nil
+	}
+	if nb.IsEmpty {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(nb.Value)
+}
 
-//func (nb *NullBool) MarshalJSON() ([]byte, error) {
-//	if nb.IsNull {
-//		return []byte("null"), nil
-//	}
-//	if nb.IsEmpty {
-//		return []byte{}, nil
-//	}
-//	return json.Marshal(nb.Value)
-//}
-//
-//func (ni *NullInt) MarshalJSON() ([]byte, error) {
-//	if ni.IsNull {
-//		return []byte("null"), nil
-//	}
-//	if ni.IsEmpty {
-//		return []byte{}, nil
-//	}
-//	return json.Marshal(ni.Value)
-//}
+func (ni NullInt) MarshalJSON() ([]byte, error) {
+	if ni.IsNull {
+		return []byte("null"), nil
+	}
+	if ni.IsEmpty {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(ni.Value)
+}
 
 func (ni *NullInt) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {

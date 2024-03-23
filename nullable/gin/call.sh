@@ -8,11 +8,12 @@ curl -X POST \
   "married": false,
   "pet": "",
   "status": {
-    "available": true,
+    "available": true
   },
   "children": [
-    {age": 5},
-    {"name": "Bob", "age": null}
+    {"age": 5},
+    {"name": "Bob", "age": null},
+    {"name": "Judit"}
   ]
 }'
 
