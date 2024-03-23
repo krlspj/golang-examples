@@ -126,22 +126,26 @@ func (ns NullInt) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ns.Value)
 }
 
-func (p Person) MarshalJSON() ([]byte, error) {
-	var name []byte
-	if p.Name.IsEmpty {
-		//passs
-	} else if p.Name.IsNull {
-		name = []byte("null")
-	} else {
-		name = []byte(p.Name.Value)
-	}
-	return json.Marshal(struct {
-		Name string `json:"name,omitempty"`
-	}{
-		Name: string(name),
-	})
-
-}
+// *** Uncomment this funcion to Marshall only values that has the .IsEmpty == false
+//func (p Person) MarshalJSON() ([]byte, error) {
+//	jsonData := make(map[string]interface{})
+//
+//	if !p.Name.IsEmpty {
+//		_bytes, err := json.Marshal(p.Name)
+//		if err != nil {
+//			return nil, err
+//		}
+//		jsonData["name"] = json.RawMessage(_bytes)
+//	}
+//	if !p.Age.IsEmpty {
+//		_bytes, err := json.Marshal(p.Age)
+//		if err != nil {
+//			return nil, err
+//		}
+//		jsonData["age"] = json.RawMessage(_bytes)
+//	}
+//	return json.Marshal(jsonData)
+//}
 
 func main() {
 	person := NewPerson()
@@ -154,7 +158,7 @@ func main() {
 
 	fmt.Println("----- unmarshalled-----")
 
-	person1 := Person{Name: NullString{Value: "John Doe", IsNull: false, IsEmpty: false}, Age: NullInt{Value: 0, IsNull: false, IsEmpty: false}, Height: NullInt{Value: 0, IsNull: true, IsEmpty: false}, Married: NullBool{Value: false, IsNull: false, IsEmpty: false}, Pet: NullString{Value: "missing", IsNull: false, IsEmpty: false}, Job: NullString{Value: "", IsNull: false, IsEmpty: true}}
+	person1 := Person{Name: NullString{Value: "John Doe", IsNull: false, IsEmpty: false}, Age: NullInt{Value: 0, IsNull: false, IsEmpty: false}, Height: NullInt{Value: 0, IsNull: true, IsEmpty: false}, Married: NullBool{Value: false, IsNull: false, IsEmpty: false}, Pet: NullString{Value: "", IsNull: false, IsEmpty: true}, Job: NullString{Value: "", IsNull: false, IsEmpty: true}}
 
 	fmt.Println("------ marshalling ------")
 	data, err := json.Marshal(person1)
