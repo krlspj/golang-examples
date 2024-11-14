@@ -9,19 +9,16 @@ func main() {
 	var wg sync.WaitGroup
 	var counter int
 
-	// Start 10 goroutines that all increment the counter
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for j := 0; j < 10000; j++ {
-				// Data race: multiple goroutines accessing the shared variable 'counter'
+			for j := 0; j < 1000; j++ {
 				counter++
 			}
 		}()
 	}
 
-	// Wait for all goroutines to finish
 	wg.Wait()
 	fmt.Println("Final counter value:", counter)
 }
